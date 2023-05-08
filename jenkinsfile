@@ -12,7 +12,6 @@ pipeline {
             steps {
                 script {
                     def CONNECT = sh(script: 'ssh -i ${SSH_CRED} -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST}', returnStdout: true).trim()
-                    //$CONNECT 'docker build -t new-flask-app
                 }
             }    
         }

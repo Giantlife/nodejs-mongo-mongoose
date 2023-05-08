@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    environment {
+        SSH_CRED = credentials('git-cred')
+        SSH_HOST = 'ec2-3-99-148-255.ca-central-1.compute.amazonaws.com'
+        SSH_USER = 'ubuntu'
+        DOCKERHUB_CREDENTIALS = credentials('nodeapp-deploy')
+    }
+
+    stages {
+        stage('Example') {
+            steps {
+                script {
+                    def CONNECT = sh(script: 'ssh -i ${SSH_CRED} -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST}', returnStdout: true).trim()
+                    //$CONNECT 'docker build -t new-flask-app
+                }
+            }    
+        }
+
+        stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+
+		stage('Push') {
+
+			steps {
+				sh 'docker push giantlife/nodejs '
+			}
+		}
+    }
+
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+
+}
